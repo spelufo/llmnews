@@ -1,0 +1,9 @@
+[Unit]
+Description=Run LLM News Fetcher daily at 1am UTC
+
+[Timer]
+OnCalendar=*-*-* 01:00:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target

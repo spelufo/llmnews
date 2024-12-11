@@ -1,2 +1,4 @@
 *.db
 .venv
+/deployments
+/deploy.tar.gz

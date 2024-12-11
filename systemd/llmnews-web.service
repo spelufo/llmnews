@@ -1,0 +1,16 @@
+[Unit]
+Description=LLM News Web Server
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/root/llmnews
+Environment=FLASK_APP=website.py
+Environment=FLASK_ENV=production
+ExecStart=/usr/bin/python3 -m flask run --host=0.0.0.0 --port=80
+Restart=always
+StandardOutput=append:/var/log/llmnews-web.log
+StandardError=append:/var/log/llmnews-web.log
+
+[Install]
+WantedBy=multi-user.target
