@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Daily LLM News - {{ date }}</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .story {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        .story-title {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+        .story-meta {
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>LLM News for {{ date }}</h1>
+    
+    {% if stories %}
+        {% for story in stories %}
+            <div class="story">
+                <div class="story-title">
+                    <a href="{{ story.url }}">{{ story.title }}</a>
+                </div>
+                <div class="story-meta">
+                    {{ story.score }} points | by <a href="https://news.ycombinator.com/user?id={{ story.by }}">{{ story.by }}</a> | <a href="{{ story.comments_url }}">comments</a>
+                </div>
+                
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No stories found for this date.</p>
+    {% endif %}
+</body>
+</html> 

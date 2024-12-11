@@ -7,9 +7,12 @@ from datetime import datetime, timedelta
 import openai
 from pydantic import BaseModel
 from typing import List
+import sqlite3
 
 
-
+# I've just discovered https://news.ycombinator.com/front?day=2024-12-10
+# which gives you what the front page looked like on a given day.
+# TODO: Use that instead of the HN API?
 
 def fetch_today_stories():
     url = "https://hacker-news.firebaseio.com/v0/topstories.json"
@@ -28,16 +31,36 @@ def fetch_today_stories():
             continue
         yield story
 
+def init_db():
+    conn = sqlite3.connect('news.db')
+    c = conn.cursor()
+    # Create tables if they don't exist
+    c.execute('''CREATE TABLE IF NOT EXISTS topstories
+                 (date TEXT PRIMARY KEY, stories TEXT)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS llmstories
+                 (date TEXT PRIMARY KEY, stories TEXT)''')
+    conn.commit()
+    conn.close()
+
 def get_today_stories():
-    filename = f"stories_{datetime.now().strftime('%Y-%m-%d')}.json"
-    if os.path.exists(filename):
-        with open(filename, "r") as f:
-            return json.load(f)
+    today = datetime.now().strftime('%Y-%m-%d')
+    conn = sqlite3.connect('news.db')
+    c = conn.cursor()
+    
+    # Try to get existing stories for today
+    c.execute('SELECT stories FROM topstories WHERE date = ?', (today,))
+    result = c.fetchone()
+    
+    if result:
+        conn.close()
+        return json.loads(result[0])
     else:
-        stories = []
-        for story in fetch_today_stories():
-            stories.append(story)
-        json.dump(stories, open(filename, "w"))
+        stories = list(fetch_today_stories())
+        # Store the stories as JSON string
+        c.execute('INSERT INTO topstories (date, stories) VALUES (?, ?)',
+                 (today, json.dumps(stories)))
+        conn.commit()
+        conn.close()
         return stories
 
 class StoryIds(BaseModel):
@@ -89,9 +112,20 @@ def filter_stories(stories):
     return [story for story in stories if story["id"] in ids]
 
 if __name__ == "__main__":
+    init_db()
     stories = get_today_stories()
     stories.sort(key=lambda x: x['score'], reverse=True)
     filtered_stories = filter_stories(stories)
+    
+    # Save filtered stories to llmstories table
+    today = datetime.now().strftime('%Y-%m-%d')
+    conn = sqlite3.connect('news.db')
+    c = conn.cursor()
+    c.execute('INSERT OR REPLACE INTO llmstories (date, stories) VALUES (?, ?)',
+             (today, json.dumps(filtered_stories)))
+    conn.commit()
+    conn.close()
+    
     print(prompt_user(filtered_stories))
 
 
