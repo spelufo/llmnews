@@ -5,13 +5,10 @@ import time
 import os
 from datetime import datetime, timedelta
 import openai
+from pydantic import BaseModel
+from typing import List
 
-# TODO:
-# - Improve input and output formats. Maybe use structured outputs.
-# - How much does it cost/day?
-# - Generate html.
-# - Make a simple web app around it.
-# - Release it and try charging for it with stripe.
+
 
 
 def fetch_today_stories():
@@ -43,19 +40,58 @@ def get_today_stories():
         json.dump(stories, open(filename, "w"))
         return stories
 
+class StoryIds(BaseModel):
+    story_ids: List[int]
+
+
+def prompt_system():
+    return """
+You must filter the list of stories, keeping only the ones about ML, AI or LLMs.
+
+Each story is given as a YAML object like this:
+
+- id: 123456
+  score: 100
+  title: "GPT-3: Language Models are Few-Shot Learners"
+  url: "https://github.com/openai/gpt-3"
+  by: "openai"
+
+"""
+
+def prompt_user(stories):
+    return "\n".join(prompt_story(story) for story in stories)
+
+def prompt_story(story):
+    s = f"- id: {story['id']}\n"
+    for k in ["score", "title", "url", "by"]:
+        s += f"  {k}: {json.dumps(story.get(k, ''))}\n"
+    return s
+
 def filter_stories(stories):
-    story_lines = ""
+    clean_stories = []
     for story in stories:
-        story_lines += f"{story['score']}\t{story['title']} ({story.get('url', '')})\n"
-    message = f"Filter this list to keep only the articles that have to do with AI or LLMs:\n\n{story_lines}"
-    response = openai.chat.completions.create(model="gpt-4o", messages=[{"role": "user", "content": message}])
-    return response.choices[0].message.content
+        if "url" in story and "id" in story:
+            clean_stories.append({
+                k: v for k, v in story.items()
+                if k in ["id", "score", "title", "url", "by"]
+            })
+    system_prompt = prompt_system()
+    user_prompt = prompt_user(clean_stories)
+    completion = openai.beta.chat.completions.parse(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        response_format=StoryIds,
+    )
+    ids = completion.choices[0].message.parsed.story_ids
+    return [story for story in stories if story["id"] in ids]
 
 if __name__ == "__main__":
     stories = get_today_stories()
     stories.sort(key=lambda x: x['score'], reverse=True)
-    response = filter_stories(stories)
-    print(response)
-
+    filtered_stories = filter_stories(stories)
+    print(prompt_user(filtered_stories))
 
 
