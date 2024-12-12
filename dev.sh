@@ -4,6 +4,22 @@ set -e
 
 deploy() {
   git push pancho main
+  ssh root@pancho 'cd /root/llmnews && ./dev.sh install'
+}
+
+install() {
+  [ $(hostname) = pancho ] || {
+    echo "This script must be run on pancho"
+    exit 1
+  }
+  cp systemd/llmnews.service /etc/systemd/system/llmnews.service
+  cp systemd/llmnews.timer /etc/systemd/system/llmnews.timer
+  touch /var/log/llmnews.log
+  chmod 644 /var/log/llmnews.log
+  systemctl daemon-reload
+  systemctl enable llmnews.timer
+  systemctl start llmnews.timer
+  systemctl status llmnews.timer
 }
 
 pancho_git() {
@@ -12,7 +28,7 @@ pancho_git() {
 
 run() {
   . .env
-  time python news.py
+  python news.py
 }
 
 cmd="${1:-run}"

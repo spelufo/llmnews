@@ -1,5 +1,5 @@
 *.db
 .venv
 .env
-/deployments
-/deploy.tar.gz
+__pycache__
+*.log

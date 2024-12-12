@@ -112,6 +112,8 @@ def filter_stories(stories):
     return [story for story in stories if story["id"] in ids]
 
 if __name__ == "__main__":
+    start_time = datetime.now()
+    print(f"{start_time.strftime('%Y-%m-%d %H:%M:%S')} | news.py start")
     init_db()
     stories = get_today_stories()
     stories.sort(key=lambda x: x['score'], reverse=True)
@@ -125,7 +127,8 @@ if __name__ == "__main__":
              (today, json.dumps(filtered_stories)))
     conn.commit()
     conn.close()
-    
-    print(prompt_user(filtered_stories))
+    end_time = datetime.now()
+    print(f"{end_time.strftime('%Y-%m-%d %H:%M:%S')} | news.py end | elapsed: {end_time - start_time}")
+
 
 

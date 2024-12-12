@@ -7,9 +7,9 @@ Type=oneshot
 User=root
 WorkingDirectory=/root/llmnews
 Environment=PYTHONUNBUFFERED=1
-ExecStart=/usr/bin/python3 /root/llmnews/news.py
-StandardOutput=append:/var/log/llmnews-fetch.log
-StandardError=append:/var/log/llmnews-fetch.log
+ExecStart=/root/llmnews/dev.sh run
+StandardOutput=append:/var/log/llmnews.log
+StandardError=append:/var/log/llmnews.log
 
 [Install]
 WantedBy=multi-user.target

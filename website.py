@@ -22,9 +22,6 @@ def index():
     stories = get_stories_for_date(today)
     if stories is None:
         stories = []
-    # Add comments_url to each story
-    for story in stories:
-        story['comments_url'] = f"https://news.ycombinator.com/item?id={story['id']}"
     return render_template('news.html', stories=stories, date=today)
 
 @app.route('/<date>')
@@ -38,9 +35,6 @@ def show_date(date):
     stories = get_stories_for_date(date)
     if stories is None:
         abort(404)
-    # Add comments_url to each story
-    for story in stories:
-        story['comments_url'] = f"https://news.ycombinator.com/item?id={story['id']}"
     return render_template('news.html', stories=stories, date=date)
 
 if __name__ == '__main__':
