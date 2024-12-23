@@ -26,6 +26,10 @@ pancho_git() {
   ssh root@pancho "cd /root/llmnews && GIT_DIR=/root/llmnews.git GIT_WORK_TREE=/root/llmnews git $@"
 }
 
+pull_db() {
+  scp root@pancho:/root/llmnews/news.db ./news.db
+}
+
 run() {
   . .env
   python news.py
