@@ -1,0 +1,16 @@
+[Unit]
+Description=LLM News Web Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/llmnews
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/root/llmnews/dev.sh web
+StandardOutput=append:/var/log/llmnews_web.log
+StandardError=append:/var/log/llmnews_web.log
+Restart=always
+
+[Install]
+WantedBy=multi-user.target 

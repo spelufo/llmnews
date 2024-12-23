@@ -24,10 +24,36 @@
             color: #666;
             font-size: 0.9em;
         }
+        .date-nav {
+          display: flex;
+          justify-content: space-between;
+          margin: 20px 0;
+        }
+        .date-nav a {
+          text-decoration: none;
+          color: #0066cc;
+        }
+        .date-nav a:hover {
+          text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <h1>LLM News for {{ date }}</h1>
+    
+    <div class="date-nav">
+      {% if prev_date %}
+        <a href="/{{ prev_date }}">← {{ prev_date }}</a>
+      {% else %}
+        <span></span>
+      {% endif %}
+      
+      {% if next_date %}
+        <a href="/{{ next_date }}">{{ next_date }} →</a>
+      {% else %}
+        <span></span>
+      {% endif %}
+    </div>
     
     {% if stories %}
         {% for story in stories %}
@@ -44,5 +70,6 @@
     {% else %}
         <p>No stories found for this date.</p>
     {% endif %}
+
 </body>
 </html> 
