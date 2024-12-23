@@ -1,6 +1,5 @@
 [Unit]
 Description=Run LLM News Fetcher daily at 1am UTC
-Unit=llmnews.service
 
 [Timer]
 OnCalendar=*-*-* 01:00:00 UTC
