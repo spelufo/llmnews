@@ -54,7 +54,7 @@ flask() {
 
 web() {
   . .env
-  uwsgi --http :8000 --wsgi-file website.py --callable app --logto /dev/stdout
+  gunicorn --bind localhost:8000 website:app --log-file /dev/stdout
 }
 
 help() {
