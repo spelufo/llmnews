@@ -15,7 +15,9 @@ install() {
   [ $(hostname) = pancho ] || {
     echo "This script must be run on the server"
     exit 1
-  }  
+  }
+  . .venv/bin/activate
+  pip install -r requirements.txt
   cp systemd/llmnews.service /etc/systemd/system/llmnews.service
   cp systemd/llmnews.timer /etc/systemd/system/llmnews.timer
   cp systemd/llmnews_web.service /etc/systemd/system/llmnews_web.service
