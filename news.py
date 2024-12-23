@@ -101,7 +101,7 @@ def filter_stories(stories):
     system_prompt = prompt_system()
     user_prompt = prompt_user(clean_stories)
     completion = openai.beta.chat.completions.parse(
-        model="gpt-4o",
+        model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},

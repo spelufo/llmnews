@@ -9,9 +9,9 @@ deploy() {
 
 install() {
   [ $(hostname) = pancho ] || {
-    echo "This script must be run on pancho"
+    echo "This script must be run on the server"
     exit 1
-  }
+  }  
   cp systemd/llmnews.service /etc/systemd/system/llmnews.service
   cp systemd/llmnews.timer /etc/systemd/system/llmnews.timer
   touch /var/log/llmnews.log
@@ -29,6 +29,11 @@ pancho_git() {
 run() {
   . .env
   python news.py
+}
+
+web() {
+  . .env
+  flask --app website.py run
 }
 
 cmd="${1:-run}"
