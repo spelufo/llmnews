@@ -33,7 +33,7 @@ install() {
   systemctl status llmnews.timer
   systemctl status llmnews_web.service
   cp nginx/llmnews.conf /etc/nginx/sites-available/llmnews.conf
-  ln -s /etc/nginx/sites-available/llmnews.conf /etc/nginx/sites-enabled/llmnews.conf
+  ln -sf /etc/nginx/sites-available/llmnews.conf /etc/nginx/sites-enabled/llmnews.conf
   nginx -t
   systemctl restart nginx
 }
