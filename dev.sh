@@ -28,8 +28,8 @@ install() {
   systemctl daemon-reload
   systemctl enable llmnews.timer
   systemctl enable llmnews_web.service
-  systemctl start llmnews.timer
-  systemctl start llmnews_web.service
+  systemctl restart llmnews.timer
+  systemctl restart llmnews_web.service
   systemctl status llmnews.timer
   systemctl status llmnews_web.service
   cp nginx/llmnews.conf /etc/nginx/sites-available/llmnews.conf
