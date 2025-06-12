@@ -69,7 +69,7 @@ class StoryIds(BaseModel):
 
 def prompt_system():
     return """
-You must filter the list of stories, keeping only the ones about ML, AI or LLMs.
+You must filter the list of stories, keeping only the ones about ML, AI, agents or LLMs.
 
 Each story is given as a YAML object like this:
 
